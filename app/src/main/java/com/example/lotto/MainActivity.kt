@@ -3,6 +3,7 @@ package com.example.lotto
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -35,11 +36,13 @@ import com.example.lotto.ui.theme.PurpleGrey80
 
 class MainActivity : ComponentActivity() {
 
+
+    private val cardsModel by viewModels<GameViewModel>()
+    private val viewModel by viewModels<StartModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LottoTheme {
-                val viewModel = StartModel()
                 viewModel.fetchAllData()
                 //LottoApp()
                 StartScreen(viewModel)

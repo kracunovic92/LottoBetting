@@ -14,14 +14,14 @@ import com.example.lotto.data.LottoOffer
 import com.example.lotto.data.OfferNextNHours
 import com.example.lotto.data.Offers
 import com.example.lotto.data.PriorityLottoOffer
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class StartModel : ViewModel() {
 
     var data by mutableStateOf(Offers())
     var  _selected by mutableStateOf(Options.FAST)
-
-
 
 
     private val _options = listOf(
