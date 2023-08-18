@@ -14,16 +14,34 @@ import kotlinx.coroutines.launch
 class StartModel : ViewModel() {
 
     var data by mutableStateOf(Offers())
+    var  _selected by mutableStateOf(0)
+
+    private val _options = listOf(
+        SelectionOption("Brza",true, Options.FAST),
+        SelectionOption("24h",false,Options.DAILY),
+        SelectionOption("Completna", false,Options.FULL)
+    ).toMutableList()
+
+    val options: List<SelectionOption>
+        get() = _options
 
     fun fetchAllData(){
-
         viewModelScope.launch {
-
-            Log.e("Fetch", "ovde")
             val response = RetrofitClient.getData()
-
-            Log.e("Respones", data.toString())
             data = response
         }
+    }
+
+    fun selectionOptionSelected(selectionOption: SelectionOption){
+        _options.forEach{it.selected = false}
+        _options.find{it.option == selectionOption.option}?.selected = true
+        val selected = _options.find{ it.selected }
+        if(selected?.value == Options.FAST)
+            _selected = 1
+        else if(selected?.value == Options.DAILY)
+            _selected = 2
+        else if(selected?.value == Options.FULL)
+            _selected = 3
+
     }
 }

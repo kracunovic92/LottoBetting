@@ -34,12 +34,15 @@ import com.example.lotto.ui.theme.LottoTheme
 import com.example.lotto.ui.theme.PurpleGrey80
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             LottoTheme {
+                val viewModel = StartModel()
+                viewModel.fetchAllData()
                 //LottoApp()
-                StartScreen()
+                StartScreen(viewModel)
             }
         }
     }
@@ -84,31 +87,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
-    @Preview
-    @Composable
-    fun BottomStartSceen(){
-
-        var list = listOf("Brze igre","Sledecih 24 sata","Svi dani")
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .selectableGroup()
-                .height(30.dp)
-                .background(color = PurpleGrey80),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-
-        ) {
-            list.forEach { item ->
-                Text(
-                    text = item,
-                    color = Color.Blue
-                )
-            }
-
-        }
-    }
 
 
     @Composable
