@@ -17,6 +17,7 @@ class MainActivity : ComponentActivity() {
             LottoTheme {
                 viewModel.fetchAllData()
                 val navController  = rememberNavController()
+                Navigation(navController = navController)
                 StartScreen(viewModel, navController = navController)
             }
         }

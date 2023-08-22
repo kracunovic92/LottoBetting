@@ -1,5 +1,6 @@
 package com.example.lotto
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -23,10 +24,9 @@ fun Navigation(
         composable(route = "StartScreen" ){
             StartScreen(viewModel = StartModel() , navController )
         }
-        composable("OfferScreen/{eventid}") { backStackEntry ->
-            // Extract the offerId parameter from the backStackEntry
-            val eventid = backStackEntry.arguments?.getString("eventid")
-            // Call your details screen composable passing the offerId
+        composable("OfferScreen/{eventId}") { backStackEntry ->
+            val eventid = backStackEntry.arguments?.getString("eventId")
+            Log.e("Event", eventid.toString())
             OfferScreen(eventid)
         }
     }
