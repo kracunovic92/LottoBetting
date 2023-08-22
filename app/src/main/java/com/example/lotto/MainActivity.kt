@@ -50,45 +50,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Composable
-    fun LottoAppStart(){
-
-
-
-    }
-    @Preview
-    @Composable
-    fun TopTabStart(){
-
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .selectableGroup()
-                .background(color = Color.Green)
-            ,
-            verticalAlignment = Alignment.CenterVertically,
-        ){
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(imageVector = Icons.Filled.Star, contentDescription = null)
-            }
-            Text(modifier = Modifier.width(100.dp),
-                textAlign = TextAlign.Center,
-                text = "Moj broj")
-            IconButton(
-                modifier = Modifier.padding(start = 50.dp),
-                onClick = { /*TODO*/ }) {
-                
-                Icon(imageVector = Icons.Outlined.Paid, contentDescription = "Your money" )
-                
-            }
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { /*TODO*/ }) {
-                Text(text = "Prijava")
-            }
-
-        }
-    }
 
 
 

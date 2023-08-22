@@ -13,7 +13,7 @@ class GameViewModel : ViewModel() {
     val expandedCardIdsList: StateFlow<List<Int>> get() = _expandedCardIdsList
 
 
-    fun onArrowClicked(cardId: Int?) {
+    fun onClicked(cardId: Int?) {
         _expandedCardIdsList.value = _expandedCardIdsList.value.toMutableList().also { list ->
             if (list.contains(cardId)) list.remove(cardId) else cardId?.let { list.add(it) }
         }

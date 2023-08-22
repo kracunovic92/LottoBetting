@@ -12,13 +12,13 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,16 +27,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import com.example.lotto.EXPAND_ANIMATION_DURATION
 import com.example.lotto.EXPANSTION_TRANSITION_DURATION
 import com.example.lotto.GameViewModel
@@ -45,31 +48,49 @@ import com.example.lotto.data.CompleteOffer
 import com.example.lotto.data.LottoOffer
 import com.example.lotto.data.OfferNextNHours
 import com.example.lotto.data.PriorityLottoOffer
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.math.min
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @Composable
 fun MiddleStartScreen(viewModel: StartModel){
 
     val data = viewModel.currentOffer<Any>()
     val cardsModel = GameViewModel()
-    val cards by cardsModel.cards.collectAsState()
     val expanded by cardsModel.expandedCardIdsList.collectAsState()
 
     LazyColumn(
+    modifier = Modifier.fillMaxWidth()
     ){
         items(data){
                 offer->
             when(offer){
                 is PriorityLottoOffer -> {
-                    gameList(offer,
-                        onArrowClick = {cardsModel.onArrowClicked(offer.gameId)},
+                    gameList(
+                        viewModel,
+                        offer,
+                        onClick = {cardsModel.onClicked(offer.gameId)},
                         expanded = expanded.contains(offer.gameId))
                 }
                 is OfferNextNHours ->{
-                    //TODO
+                    gameList(
+                        viewModel,
+                        offer,
+                        onClick = {cardsModel.onClicked(offer.gameId)},
+                        expanded = expanded.contains(offer.gameId)
+                        )
                 }
                 is CompleteOffer -> {
-                    //TODO
+                    gameList(
+                        viewModel,
+                        offer = offer,
+                        onClick = { cardsModel.onClicked(offer.gameId) },
+                        expanded = expanded.contains(offer.gameId))
                 }
             }
         }
@@ -78,8 +99,10 @@ fun MiddleStartScreen(viewModel: StartModel){
 
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
-fun gameList(offer: Any,
-             onArrowClick: () -> Unit,
+fun gameList(
+            viewModel: StartModel,
+            offer: Any,
+             onClick: () -> Unit,
              expanded: Boolean,
 ) {
 
@@ -90,58 +113,41 @@ fun gameList(offer: Any,
     }
     val transition = updateTransition(transitionState)
 
-    val cardPaddingHorizontal by transition.animateDp({
-        tween(durationMillis = EXPAND_ANIMATION_DURATION)
-    }, label = "") {
-        if (expanded) 30.dp else 20.dp
-    }
-
-    val cardRoundedCorners by transition.animateDp({
-        tween(
-            durationMillis = EXPAND_ANIMATION_DURATION,
-            easing = FastOutSlowInEasing
-        )
-    }, label = "") {
-        if (expanded) 0.dp else 16.dp
-    }
 
     Card(
-        shape = RoundedCornerShape(cardRoundedCorners),
+        shape = RectangleShape,
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                horizontal = cardPaddingHorizontal,
                 vertical = 8.dp
             )
     ) {
         Column {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.clickable{
-                    onArrowClick.invoke()
+                modifier = Modifier
+                    .clickable{
+                    onClick.invoke()
                 }
             ){
                 when (offer) {
                     is PriorityLottoOffer -> {
                         Column {
                             Text(text = offer.gameName.toString())
-                            ExpandableContent(visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer)
+                            ExpandableContent(viewModel = viewModel,visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer)
                         }
-
-
-
                     }
-
                     is OfferNextNHours -> {
-                        Text(text = offer.gameName.toString())
-                        ExpandableContent(visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer)
-
+                        Column {
+                            Text(text = offer.gameName.toString())
+                            ExpandableContent(viewModel = viewModel, visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer)
+                        }
                     }
-
                     is CompleteOffer -> {
-                        Text(text = offer.gameName.toString())
-                        ExpandableContent(visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer)
-
+                        Column {
+                            Text(text = offer.gameName.toString())
+                            ExpandableContent(viewModel = viewModel,visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer)
+                        }
                     }
                 }
             }
@@ -155,17 +161,20 @@ fun gameList(offer: Any,
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun ExpandableContent(
+    viewModel: StartModel,
     visible: Boolean = true,
     initialVisibility: Boolean = false,
     offer: ArrayList<LottoOffer>
 ) {
+
+    val currentTimestamp = System.currentTimeMillis()
+    val coroutineScope = rememberCoroutineScope()
+    val dateFormat = SimpleDateFormat("hh:mm", Locale.getDefault())
+    var time by remember { mutableStateOf("0") }
     var visibleLottoCount by remember { mutableStateOf(3) }
     val enterTransition = remember {
         expandVertically(
             expandFrom = Alignment.Top,
-            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
-        ) + fadeIn(
-            initialAlpha = 0.3f,
             animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
         )
     }
@@ -174,24 +183,58 @@ fun ExpandableContent(
             // Expand from the top.
             shrinkTowards = Alignment.Top,
             animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
-        ) + fadeOut(
-            // Fade in with the initial alpha of 0.3f.
-            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
         )
     }
+
+    LaunchedEffect(currentTimestamp) {
+        coroutineScope.launch {
+            while (true) {
+
+                offer.take(visibleLottoCount).forEach { lottoOffer ->
+
+                    time  = viewModel.calculateTime(lottoOffer).toString()
+                }
+
+                delay(1000)
+            }
+        }
+    }
+
     AnimatedVisibility(
         visible = visible,
         initiallyVisible = initialVisibility,
         enter = enterTransition,
         exit = exitTransition
     ) {
+
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            offer.take(visibleLottoCount).forEach { lottoOffer ->
-                Text(text = lottoOffer.eventId.toString())
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.Blue),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Vreme izvlacenja")
+                Text(text = "Preostalo vremena")
+            }
+            offer.take(visibleLottoCount).forEach {
+                    lottoOffer ->
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clickable(
+                                            onClick = openOffer(lottoOffer)
+                                        ),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ){
+                                    Text(text = dateFormat.format(lottoOffer.time?.let { Date(it) }))
+                                    Text(text = time)
+                                }
+
             }
             if (visibleLottoCount < offer.size) {
                 Button(
@@ -210,4 +253,11 @@ fun ExpandableContent(
 
 
     }
+
+@Composable
+fun openOffer(lottoOffer: LottoOffer): () -> Unit {
+
+
+    return {}
+}
 

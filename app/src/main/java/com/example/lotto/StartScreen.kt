@@ -19,6 +19,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -55,32 +56,29 @@ import com.example.lotto.data.OfferNextNHours
 import com.example.lotto.data.PriorityLottoOffer
 import com.example.lotto.start_screen.BottomStartScreen
 import com.example.lotto.start_screen.MiddleStartScreen
+import com.example.lotto.start_screen.TopStartBar
+import com.example.lotto.start_screen.TopTabStart
 
 
 val EXPAND_ANIMATION_DURATION = 100
 val EXPANSTION_TRANSITION_DURATION = 100
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun StartScreen(
     viewModel: StartModel,
 ) {
-    Surface(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column (modifier = Modifier.fillMaxSize()){
-
+    Scaffold(
+        topBar = { TopTabStart() },
+        content = {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(600.dp)
-            ){
-                MiddleStartScreen(viewModel)
+                    .fillMaxSize()
+                    .padding(top = 50.dp,
+                        bottom = 50.dp/* Desired top padding */)
+            ) {
+                MiddleStartScreen(viewModel = viewModel)
             }
-            Column {
-                BottomStartScreen(viewModel)
-            }
-
-        }
-    }
-
-
+        },
+        bottomBar = { BottomStartScreen(viewModel = viewModel)}
+    )
 }

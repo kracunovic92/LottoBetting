@@ -17,6 +17,8 @@ import com.example.lotto.data.PriorityLottoOffer
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class StartModel : ViewModel() {
 
@@ -58,6 +60,15 @@ class StartModel : ViewModel() {
             Options.DAILY -> data.offerNextNHours as MutableList<T>
             Options.FAST -> data.priorityLottoOffer as MutableList<T>
         }
+    }
+
+     suspend fun calculateTime(offer: LottoOffer): String? {
+        val dataFormat = SimpleDateFormat("hh:mm:ss", Locale.getDefault())
+        val currentTimestamp = System.currentTimeMillis()
+        val loto_time = offer.time?: 0L
+        val difference =  loto_time-currentTimestamp
+        return dataFormat.format(difference)
+
     }
 
 }
