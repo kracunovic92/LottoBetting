@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -170,7 +171,7 @@ fun ExpandableContent(
     val currentTimestamp = System.currentTimeMillis()
     val coroutineScope = rememberCoroutineScope()
     val dateFormat = SimpleDateFormat("hh:mm", Locale.getDefault())
-    var time by remember { mutableStateOf("0") }
+    val timeDifferences = remember { mutableStateMapOf<Long, String>() }
     var visibleLottoCount by remember { mutableStateOf(3) }
     val enterTransition = remember {
         expandVertically(
@@ -192,7 +193,9 @@ fun ExpandableContent(
 
                 offer.take(visibleLottoCount).forEach { lottoOffer ->
 
-                    time  = viewModel.calculateTime(lottoOffer).toString()
+                    val fixed_time = lottoOffer.time?: 0L
+                    val time   = viewModel.calculateTime(lottoOffer).toString()
+                    timeDifferences[fixed_time] = time
                 }
 
                 delay(1000)
@@ -232,7 +235,7 @@ fun ExpandableContent(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ){
                                     Text(text = dateFormat.format(lottoOffer.time?.let { Date(it) }))
-                                    Text(text = time)
+                                    Text(text =timeDifferences[lottoOffer.time ?: 0L] ?: "")
                                 }
 
             }
