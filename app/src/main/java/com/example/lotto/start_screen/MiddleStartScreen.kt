@@ -3,14 +3,10 @@ package com.example.lotto.start_screen
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,11 +14,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -39,10 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.unit.dp
-import com.example.lotto.EXPAND_ANIMATION_DURATION
-import com.example.lotto.EXPANSTION_TRANSITION_DURATION
+import androidx.navigation.NavController
 import com.example.lotto.GameViewModel
 import com.example.lotto.StartModel
 import com.example.lotto.data.CompleteOffer
@@ -55,11 +47,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.min
-import kotlin.time.DurationUnit
-import kotlin.time.toDuration
 
 @Composable
-fun MiddleStartScreen(viewModel: StartModel){
+fun MiddleStartScreen(viewModel: StartModel, navController: NavController){
 
     val data = viewModel.currentOffer<Any>()
     val cardsModel = GameViewModel()
@@ -73,6 +63,7 @@ fun MiddleStartScreen(viewModel: StartModel){
             when(offer){
                 is PriorityLottoOffer -> {
                     gameList(
+                        navController,
                         viewModel,
                         offer,
                         onClick = {cardsModel.onClicked(offer.gameId)},
@@ -80,14 +71,16 @@ fun MiddleStartScreen(viewModel: StartModel){
                 }
                 is OfferNextNHours ->{
                     gameList(
+                        navController,
                         viewModel,
                         offer,
                         onClick = {cardsModel.onClicked(offer.gameId)},
                         expanded = expanded.contains(offer.gameId)
-                        )
+                    )
                 }
                 is CompleteOffer -> {
                     gameList(
+                        navController,
                         viewModel,
                         offer = offer,
                         onClick = { cardsModel.onClicked(offer.gameId) },
@@ -101,10 +94,11 @@ fun MiddleStartScreen(viewModel: StartModel){
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
 fun gameList(
-            viewModel: StartModel,
-            offer: Any,
-             onClick: () -> Unit,
-             expanded: Boolean,
+    navController: NavController,
+    viewModel: StartModel,
+    offer: Any,
+    onClick: () -> Unit,
+    expanded: Boolean
 ) {
 
     val transitionState = remember {
@@ -135,19 +129,19 @@ fun gameList(
                     is PriorityLottoOffer -> {
                         Column {
                             Text(text = offer.gameName.toString())
-                            ExpandableContent(viewModel = viewModel,visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer)
+                            ExpandableContent(viewModel = viewModel,visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer, navController = navController)
                         }
                     }
                     is OfferNextNHours -> {
                         Column {
                             Text(text = offer.gameName.toString())
-                            ExpandableContent(viewModel = viewModel, visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer)
+                            ExpandableContent(viewModel = viewModel, visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer, navController = navController)
                         }
                     }
                     is CompleteOffer -> {
                         Column {
                             Text(text = offer.gameName.toString())
-                            ExpandableContent(viewModel = viewModel,visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer)
+                            ExpandableContent(viewModel = viewModel,visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer, navController = navController)
                         }
                     }
                 }
@@ -165,7 +159,8 @@ fun ExpandableContent(
     viewModel: StartModel,
     visible: Boolean = true,
     initialVisibility: Boolean = false,
-    offer: ArrayList<LottoOffer>
+    offer: ArrayList<LottoOffer>,
+    navController: NavController
 ) {
 
     val currentTimestamp = System.currentTimeMillis()
@@ -181,7 +176,6 @@ fun ExpandableContent(
     }
     val exitTransition = remember {
         shrinkVertically(
-            // Expand from the top.
             shrinkTowards = Alignment.Top,
             animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
         )
@@ -230,7 +224,10 @@ fun ExpandableContent(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable(
-                                            onClick = openOffer(lottoOffer)
+                                            onClick ={
+                                              navController.navigate("OfferScreen/${lottoOffer.eventId}")
+                                            }
+
                                         ),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ){
@@ -257,10 +254,4 @@ fun ExpandableContent(
 
     }
 
-@Composable
-fun openOffer(lottoOffer: LottoOffer): () -> Unit {
-
-
-    return {}
-}
 

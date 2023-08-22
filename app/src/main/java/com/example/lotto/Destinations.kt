@@ -1,25 +1,22 @@
 package com.example.lotto
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Pages
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.runtime.Composable
 
 
 interface Destinations {
 
-    val icon: ImageVector
     val route: String
+    val screen: @Composable () -> Unit
+
 
 }
 
 
-object  FastLoto: Destinations{
+object  Start: Destinations{
 
-    override val icon: ImageVector
-        get() = Icons.Filled.Pages
     override val route: String
-        get() = "fastloto"
+        get() = "Start"
+
+    override val screen: @Composable () -> Unit
+        get() = {TODO("Not yet implemented")}
 }
-
-
-val BottonTableRow = listOf(FastLoto)

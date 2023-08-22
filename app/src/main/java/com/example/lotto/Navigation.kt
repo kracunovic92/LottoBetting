@@ -6,6 +6,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.lotto.start_screen.StartScreen
 
 @Composable
 fun Navigation(
@@ -16,13 +17,17 @@ fun Navigation(
 
     NavHost(
         navController = navController,
-        startDestination = FastLoto.route,
+        startDestination = "StartScreen",
         modifier = modifier
     ){
-        composable(route = FastLoto.route ){
-            FastLotoScreen(
-
-            )
+        composable(route = "StartScreen" ){
+            StartScreen(viewModel = StartModel() , navController )
+        }
+        composable("OfferScreen/{eventid}") { backStackEntry ->
+            // Extract the offerId parameter from the backStackEntry
+            val eventid = backStackEntry.arguments?.getString("eventid")
+            // Call your details screen composable passing the offerId
+            OfferScreen(eventid)
         }
     }
 
