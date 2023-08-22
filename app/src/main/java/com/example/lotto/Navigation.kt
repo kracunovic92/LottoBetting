@@ -24,10 +24,10 @@ fun Navigation(
         composable(route = "StartScreen" ){
             StartScreen(viewModel = StartModel() , navController )
         }
-        composable("OfferScreen/{eventId}") { backStackEntry ->
+        composable(route = "OfferScreen/{eventId}") { backStackEntry ->
             val eventid = backStackEntry.arguments?.getString("eventId")
             Log.e("Event", eventid.toString())
-            OfferScreen(eventid)
+            OfferScreen(eventid,navController)
         }
     }
 
