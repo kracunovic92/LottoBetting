@@ -1,6 +1,7 @@
 package com.example.lotto.start_screen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.MutableTransitionState
@@ -36,7 +37,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.lotto.GameViewModel
-import com.example.lotto.StartModel
+import com.example.lotto.models.StartModel
 import com.example.lotto.data.CompleteOffer
 import com.example.lotto.data.LottoOffer
 import com.example.lotto.data.OfferNextNHours
@@ -141,7 +142,7 @@ fun gameList(
                     is CompleteOffer -> {
                         Column {
                             Text(text = offer.gameName.toString())
-                            ExpandableContent(viewModel = viewModel,visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer, navController = navController)
+                            ExpandableContent(viewModel = viewModel,visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer, navController = navController )
                         }
                     }
                 }
@@ -161,8 +162,8 @@ fun ExpandableContent(
     initialVisibility: Boolean = false,
     offer: ArrayList<LottoOffer>,
     navController: NavController
-) {
 
+) {
     val currentTimestamp = System.currentTimeMillis()
     val coroutineScope = rememberCoroutineScope()
     val dateFormat = SimpleDateFormat("hh:mm", Locale.getDefault())
@@ -225,10 +226,13 @@ fun ExpandableContent(
                                         .fillMaxWidth()
                                         .clickable(
                                             onClick ={
+                                                //mCon.startActivity(Intent(mCon, SecondActivity::class.java))
+                                                Log.e("lottoOfferId", lottoOffer.eventId.toString())
+                                                viewModel.setEvent(lottoOffer)
                                               navController.navigate("OfferScreen/${lottoOffer.eventId}")
                                             }
-
-                                        ),
+                                        )
+                                    ,
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ){
                                     Text(text = dateFormat.format(lottoOffer.time?.let { Date(it) }))

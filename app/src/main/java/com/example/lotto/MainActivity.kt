@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.navigation.compose.rememberNavController
+import com.example.lotto.models.StartModel
 import com.example.lotto.start_screen.StartScreen
 import com.example.lotto.ui.theme.LottoTheme
 
@@ -17,8 +18,7 @@ class MainActivity : ComponentActivity() {
             LottoTheme {
                 viewModel.fetchAllData()
                 val navController  = rememberNavController()
-                Navigation(navController = navController)
-                StartScreen(viewModel, navController = navController)
+                Navigation(navController = navController, viewModel= viewModel)
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.example.lotto
+package com.example.lotto.models
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.lotto.api_calls.RetrofitClient
 import com.example.lotto.data.LottoOffer
 import com.example.lotto.data.Offers
+import com.example.lotto.start_screen.Options
+import com.example.lotto.start_screen.SelectionOption
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -16,12 +18,14 @@ class StartModel : ViewModel() {
 
     var data by mutableStateOf(Offers())
     var  _selected by mutableStateOf(Options.FAST)
+    var  selectedEvent by mutableStateOf(LottoOffer())
+
 
 
     private val _options = listOf(
         SelectionOption("Fast",true, Options.FAST),
-        SelectionOption("24h",false,Options.DAILY),
-        SelectionOption("Complete", false,Options.FULL)
+        SelectionOption("24h",false, Options.DAILY),
+        SelectionOption("Complete", false, Options.FULL)
     ).toMutableList()
 
     val options: List<SelectionOption>
@@ -62,5 +66,9 @@ class StartModel : ViewModel() {
         return dataFormat.format(difference)
 
     }
+    fun setEvent(eventid : LottoOffer){
+        selectedEvent = eventid
+    }
+
 
 }

@@ -18,8 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
-import com.example.lotto.SelectionOption
-import com.example.lotto.StartModel
+import com.example.lotto.models.StartModel
 
 @Composable
 fun BottomStartScreen(viewModel: StartModel){
