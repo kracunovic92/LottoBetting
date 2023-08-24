@@ -15,10 +15,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,22 +26,24 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.lotto.GameViewModel
-import com.example.lotto.models.StartModel
 import com.example.lotto.data.CompleteOffer
 import com.example.lotto.data.LottoOffer
 import com.example.lotto.data.OfferNextNHours
 import com.example.lotto.data.PriorityLottoOffer
+import com.example.lotto.models.StartModel
+import com.example.lotto.ui.theme.DarkBlack
+import com.example.lotto.ui.theme.LightGrey
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -114,34 +116,45 @@ fun gameList(
         shape = RectangleShape,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                vertical = 8.dp
-            )
     ) {
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = LightGrey)
+        ) {
             Row(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
-                    .clickable{
-                    onClick.invoke()
-                }
+                    .padding(2.dp)
+                    .clickable {
+                        onClick.invoke()
+                    }
             ){
                 when (offer) {
                     is PriorityLottoOffer -> {
-                        Column {
-                            Text(text = offer.gameName.toString())
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Center
+                        ){
+                            Text(text = offer.gameName.toString(), Modifier.height(50.dp))
                             ExpandableContent(viewModel = viewModel,visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer, navController = navController)
                         }
                     }
                     is OfferNextNHours -> {
-                        Column {
-                            Text(text = offer.gameName.toString())
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(text = offer.gameName.toString(), Modifier.height(50.dp))
                             ExpandableContent(viewModel = viewModel, visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer, navController = navController)
                         }
                     }
                     is CompleteOffer -> {
-                        Column {
-                            Text(text = offer.gameName.toString())
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(text = offer.gameName.toString(), Modifier.height(50.dp))
                             ExpandableContent(viewModel = viewModel,visible = expanded, initialVisibility = expanded, offer = offer.lottoOffer, navController = navController )
                         }
                     }
@@ -161,14 +174,14 @@ fun ExpandableContent(
     visible: Boolean = true,
     initialVisibility: Boolean = false,
     offer: ArrayList<LottoOffer>,
-    navController: NavController
+    navController: NavController,
 
 ) {
     val currentTimestamp = System.currentTimeMillis()
     val coroutineScope = rememberCoroutineScope()
     val dateFormat = SimpleDateFormat("hh:mm", Locale.getDefault())
     val timeDifferences = remember { mutableStateMapOf<Long, String>() }
-    var visibleLottoCount by remember { mutableStateOf(3) }
+    var visibleLottoCount  = 3
     val enterTransition = remember {
         expandVertically(
             expandFrom = Alignment.Top,
@@ -213,7 +226,7 @@ fun ExpandableContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(color = Color.Blue),
+                    .background(color = LightGrey),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(text = "Vreme izvlacenja")
@@ -224,12 +237,13 @@ fun ExpandableContent(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
+                                        .background(color = DarkBlack)
+                                        .padding(5.dp)
                                         .clickable(
-                                            onClick ={
-                                                //mCon.startActivity(Intent(mCon, SecondActivity::class.java))
+                                            onClick = {
                                                 Log.e("lottoOfferId", lottoOffer.eventId.toString())
                                                 viewModel.setEvent(lottoOffer)
-                                              navController.navigate("OfferScreen/${lottoOffer.eventId}")
+                                                navController.navigate("OfferScreen/${lottoOffer.gameId}/${lottoOffer.eventId}")
                                             }
                                         )
                                     ,
@@ -241,14 +255,18 @@ fun ExpandableContent(
 
             }
             if (visibleLottoCount < offer.size) {
-                Button(
-                    onClick = {
-                        visibleLottoCount = min(visibleLottoCount + 3, offer.size)
-                    },
+                Row(
                     modifier = Modifier
-                        .padding(top = 8.dp)
-                ) {
-                    Text(text = "Show More")
+                        .fillMaxWidth()
+                        .background(color = DarkBlack)
+                        .clickable {
+                            visibleLottoCount = min(visibleLottoCount + 3, offer.size)
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ){
+                    Text(text = "...", textAlign = TextAlign.Center, color = Color.Blue, fontSize = 20.sp)
+
                 }
             }
         }

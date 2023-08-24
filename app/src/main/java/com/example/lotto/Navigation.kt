@@ -29,11 +29,12 @@ fun Navigation(
             StartScreen(viewModel = viewModel , navController =navController )
 
         }
-        composable(route = "OfferScreen/{eventId}",
-            arguments = listOf(navArgument("eventId"){type = NavType.StringType})) {
+        composable(route = "OfferScreen/{gameId}/{eventId}",
+            arguments = listOf(navArgument("gameId"){type = NavType.StringType},navArgument("eventId"){type = NavType.StringType})) {
                 backStackEntry ->
+                val gameid = backStackEntry.arguments?.getString("gameId")
                 val eventid = backStackEntry.arguments?.getString("eventId")
-                EventScreen(eventid, navController = navController, viewModel = viewModel)
+                EventScreen(gameid =gameid ,eventid, navController = navController)
         }
     }
 

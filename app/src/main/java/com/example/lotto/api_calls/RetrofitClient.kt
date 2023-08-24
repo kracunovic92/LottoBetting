@@ -1,5 +1,6 @@
 package com.example.lotto.api_calls
 
+import com.example.lotto.data.Event
 import com.example.lotto.data.GameData
 import com.example.lotto.data.Offers
 import com.example.lotto.data.PriorityGame
@@ -38,6 +39,10 @@ object RetrofitClient {
         )
 
         return my_api.getLotoOffers(gameData)
+    }
+
+    suspend fun  getEventData(game_id:Int,event_id: Int): Event{
+        return my_api.getLottoEvent(1,game_id,event_id)
     }
 
 

@@ -1,6 +1,5 @@
 package com.example.lotto.event_screen
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -35,12 +34,9 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination
 import com.example.lotto.Destinations
-import com.example.lotto.models.StartModel
-import kotlinx.coroutines.selects.select
+import com.example.lotto.models.EventModel
 import java.util.Locale
 
 @Composable
@@ -49,7 +45,7 @@ fun EventTopBar(
     onTabSelected: (Destinations) -> Unit,
     currentScreen: Destinations,
     navController: NavController,
-    viewModel: StartModel
+    viewModel: EventModel
 ){
     Surface(
         Modifier
@@ -67,7 +63,7 @@ fun EventTopBar(
                     Icon(imageVector = Icons.Filled.ArrowBack, contentDescription ="Nazad" )
                 }
 
-                Text(text = viewModel.selectedEvent.name.toString())
+                Text(text = viewModel.event_info.name.toString())
 
                 Button(onClick = { /*TODO*/ }) {
                     Icon(imageVector = Icons.Filled.Star, contentDescription = null)

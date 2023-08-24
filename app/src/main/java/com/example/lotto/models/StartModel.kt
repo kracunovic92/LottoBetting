@@ -2,6 +2,7 @@ package com.example.lotto.models
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +20,7 @@ class StartModel : ViewModel() {
     var data by mutableStateOf(Offers())
     var  _selected by mutableStateOf(Options.FAST)
     var  selectedEvent by mutableStateOf(LottoOffer())
+
 
 
 
@@ -69,6 +71,7 @@ class StartModel : ViewModel() {
     fun setEvent(eventid : LottoOffer){
         selectedEvent = eventid
     }
+
 
 
 }
