@@ -1,5 +1,6 @@
 package com.example.lotto.models
 
+import CalculationResult
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,6 +9,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.lotto.api_calls.RetrofitClient
 import com.example.lotto.data.Event
+import com.example.lotto.data.TicketSystemCombinationGroup
+import getMaxPotentialPayment
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -19,9 +22,12 @@ class EventModel: ViewModel() {
     var event_info by mutableStateOf(Event())
 
     var max_numbers = 0
+    var res by mutableStateOf(CalculationResult())
 
     var  selected_numbers by mutableStateOf(emptyList<Int>())
     val dateFormat = SimpleDateFormat("hh:mm", Locale.getDefault())
+
+    val tiket by mutableStateOf(TicketSystemCombinationGroup())
 
     fun fetchEventData(gameId: String?, eventId: String?) {
         viewModelScope.launch {
@@ -57,6 +63,10 @@ class EventModel: ViewModel() {
         }
     }
 
+    fun clearNumbers(){
+        selected_numbers = selected_numbers.drop(0)
+    }
+
     fun getRandomNumbers( n: Int) {
         val randomSet =  mutableSetOf<Int>()
         while (randomSet.size < n) {
@@ -66,6 +76,22 @@ class EventModel: ViewModel() {
 
         selected_numbers = selected_numbers.drop(0)
         selected_numbers = randomSet.toList()
+
+    }
+    fun calculateWin(uplata: Double, option: List<Int>): Double {
+
+        val n = selected_numbers.size
+        tiket.payin = uplata
+        tiket.fromHowMany = event_info.ballsToBet?:0
+        tiket.howMany = n
+
+
+        var r = getMaxPotentialPayment(event_info,0,selected_numbers,option,uplata,res)
+
+        return r
+    }
+
+    fun uplatiTiket(): Unit {
 
     }
 }
