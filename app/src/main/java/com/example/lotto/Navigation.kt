@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.lotto.event_screen.EventScreen
+import com.example.lotto.models.EventModel
 import com.example.lotto.models.StartModel
 import com.example.lotto.start_screen.StartScreen
 
@@ -17,7 +18,8 @@ fun Navigation(
 
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: StartModel
+    viewModel: StartModel,
+    eventModel: EventModel
     ){
 
     NavHost(
@@ -34,8 +36,12 @@ fun Navigation(
                 backStackEntry ->
                 val gameid = backStackEntry.arguments?.getString("gameId")
                 val eventid = backStackEntry.arguments?.getString("eventId")
-                EventScreen(gameid =gameid ,eventid, navController = navController)
+                EventScreen(gameid =gameid ,eventid, navController = navController,viewModel = eventModel)
         }
+        composable(route = "TicketScreen"){
+            TicketScreen(navController = navController, eventModel = eventModel)
+        }
+
     }
 
 }

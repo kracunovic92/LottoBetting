@@ -55,6 +55,7 @@ import java.util.Locale
 
 @Composable
 fun TalonScreen(navController: NavHostController, viewModel: EventModel) {
+
     val event = viewModel.event_info
     val name = event.name
     val time_l = event.time

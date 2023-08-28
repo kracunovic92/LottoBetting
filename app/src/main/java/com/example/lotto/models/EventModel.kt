@@ -9,6 +9,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.lotto.api_calls.RetrofitClient
 import com.example.lotto.data.Event
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.random.Random
 
 class EventModel: ViewModel() {
@@ -18,15 +21,21 @@ class EventModel: ViewModel() {
     var max_numbers = 0
 
     var  selected_numbers by mutableStateOf(emptyList<Int>())
+    val dateFormat = SimpleDateFormat("hh:mm", Locale.getDefault())
 
     fun fetchEventData(gameId: String?, eventId: String?) {
         viewModelScope.launch {
+            selected_numbers.drop(0)
             val game:Int  = gameId?.toInt() ?: 0
             val event: Int = eventId?.toInt()?: 0
             val response = RetrofitClient.getEventData(game,event)
             event_info = response
-            max_numbers  = event_info.ballsToDraw ?: 0
+            max_numbers  = event_info.ballsToBet ?: 0
         }
+    }
+
+    fun makeDate(): String?{
+       return event_info.time?.let { Date(it) }?.let { dateFormat.format(it) }
     }
 
 
@@ -39,7 +48,8 @@ class EventModel: ViewModel() {
         if (selected_numbers.contains(number)){
             selected_numbers = selected_numbers - listOf(number)
         }else{
-            if(selected_numbers.size < max_numbers) {
+            val balls = event_info.ballsToBet?:0
+            if(selected_numbers.size < balls) {
                 selected_numbers = selected_numbers + listOf(number)
             }else{
                 Log.e("Previse brojeva","Greska")

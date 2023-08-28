@@ -1,5 +1,6 @@
 package com.example.lotto.event_screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,13 +29,14 @@ import com.example.lotto.screen_list
 
 @Composable
 fun EventScreen(gameid:String?,eventId: String?,
-                navController: NavController) {
+                navController: NavController,
+                viewModel: EventModel
+) {
 
     val currentBackStack by navController.currentBackStackEntryAsState()
     val currentDestination = currentBackStack?.destination
     val currentScreen =  screen_list.find{it.route == currentDestination?.route} ?: Talon
 
-    val viewModel = EventModel();
     viewModel.fetchEventData(gameid,eventId)
 
 
@@ -55,7 +57,11 @@ fun EventScreen(gameid:String?,eventId: String?,
         bottomBar = {
             Row(
                 modifier =  Modifier.fillMaxWidth()
-                    .height(60.dp),
+                    .height(60.dp)
+                    .clickable(onClick = {
+                        navController.navigate("TicketScreen")
+                    })
+                    ,
                 verticalAlignment = Alignment.CenterVertically
 
             ) {
@@ -79,6 +85,7 @@ fun EventScreen(gameid:String?,eventId: String?,
             composable(route = "Talon"){
                 TalonScreen(navController2,viewModel)
             }
+
         }
     }
 
